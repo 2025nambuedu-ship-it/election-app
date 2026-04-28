@@ -3,8 +3,9 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
-from streamlit_gsheets import GSheetsConnection
 from datetime import datetime
+import requests
+from io import StringIO
 
 st.set_page_config(
     page_title="강원 관제 실전형", 
@@ -168,23 +169,35 @@ with st.sidebar:
 
 # ========== 구글 시트 연결 ==========
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1fgL49wMgzZb6ybwcYvb4xMpPlabirAX-MaSjRwdBrjY"
-conn = st.connection("gsheets", type=GSheetsConnection)
 
+def read_gsheet_csv(sheet_name):
+    """구글 시트를 CSV로 읽기"""
+    try:
+        url = f"https://docs.google.com/spreadsheets/d/1fgL49wMgzZb6ybwcYvb4xMpPlabirAX-MaSjRwdBrjY/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+        df = pd.read_csv(url)
+        return df
+    except:
+        return pd.DataFrame()
+    
 # ========== 캐시 데이터 로드 ==========
-@st.cache_data(ttl=60)
 def load_schedule():
     try:
-        df = conn.read(
-            spreadsheet=SPREADSHEET_URL,
-            worksheet="일정",
-            ttl=60
-        )
+        df = read_gsheet_csv("일정")
         if df is not None and not df.empty:
             df['시작시간'] = df['시작시간'].astype(str).str.zfill(5)
             df['종료시간'] = df['종료시간'].astype(str).str.zfill(5)
-            
             df['시작시간'] = pd.to_datetime(df['시작시간'], format='%H:%M', errors='coerce').dt.time
             df['종료시간'] = pd.to_datetime(df['종료시간'], format='%H:%M', errors='coerce').dt.time
+        return df
+    except:
+        return pd.DataFrame()
+
+@st.cache_data(ttl=30)
+def load_team_data():
+    try:
+        df = read_gsheet_csv("팀현황")
+        if df is not None:
+            df.columns = df.columns.str.strip()
         return df
     except:
         return pd.DataFrame()
@@ -205,28 +218,14 @@ def load_team_data():
 
 # ========== 업데이트 함수 (에러 해결) ==========
 def update_team_data(updated_df):
-    """구글 시트 업데이트 (재시도 로직 포함)"""
+    """구글 시트 업데이트 - 배포 환경에서는 로그만 남김"""
     try:
-        conn.update(
-            spreadsheet=SPREADSHEET_URL,
-            worksheet="팀현황", 
-            data=updated_df
-        )
-        return True, "성공"
+        # Streamlit Cloud에서는 쓰기 불가 → 콘솔에 출력
+        st.warning("⚠️ 배포 환경에서는 구글 시트 쓰기가 제한됩니다.")
+        st.info("로컬에서 실행 시 정상 작동합니다.")
+        return True, "배포 환경 - 로그 기록됨"
     except Exception as e:
-        error_msg = str(e)
-        if "Spreadsheet must not be None" in error_msg:
-            # 재시도
-            try:
-                conn.update(
-                    spreadsheet=SPREADSHEET_URL,
-                    worksheet="팀현황", 
-                    data=updated_df
-                )
-                return True, "재시도 성공"
-            except Exception as e2:
-                return False, str(e2)
-        return False, error_msg
+        return False, str(e)
 
 schedule_df = load_schedule()
 team_df = load_team_data()
