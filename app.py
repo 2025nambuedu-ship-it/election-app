@@ -127,7 +127,7 @@ st.markdown("""
 
 # ========== 사이드바 ==========
 with st.sidebar:
-    st.markdown("## 🎯 강원 유세 관제실")
+    st.markdown("## 🎯 선거 캠프 상황실")
     st.divider()
     
     st.markdown("## 📅 관제 일자 선택")
