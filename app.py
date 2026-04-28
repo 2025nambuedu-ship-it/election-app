@@ -507,7 +507,7 @@ with tab2:
         """
     
     cards_html += '</div>'
-    components.html(cards_html, height=len(result_df)*130+50, scrolling=True)
+    components.html(cards_html, height=len(result_df)*160+80, scrolling=True)
     
     if filtered_df.empty:
         st.warning("선택한 조건에 해당하는 유세단이 없습니다.")
