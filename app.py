@@ -202,19 +202,6 @@ def load_team_data():
     except:
         return pd.DataFrame()
 
-@st.cache_data(ttl=30)
-def load_team_data():
-    try:
-        df = conn.read(
-            spreadsheet=SPREADSHEET_URL,
-            worksheet="팀현황",
-            ttl=30
-        )
-        if df is not None:
-            df.columns = df.columns.str.strip()
-        return df
-    except:
-        return pd.DataFrame()
 
 # ========== 업데이트 함수 (에러 해결) ==========
 def update_team_data(updated_df):
