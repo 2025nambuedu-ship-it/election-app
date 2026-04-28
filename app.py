@@ -237,8 +237,11 @@ if team_df.empty:
 tab1, tab2, tab3 = st.tabs(["🗺️ 실시간 지도", "📋 현황판", "📱 보고하기"])
 
 # ✅ 현재 시간
-now_time = datetime.now().time()
-now_str = now_time.strftime('%H:%M')
+# ✅ 한국 시간
+from datetime import timedelta
+kst_now = datetime.now() + timedelta(hours=9)
+now_time = kst_now.time()
+now_str = kst_now.strftime('%H:%M')
 
 # ===================================
 # TAB 1 : 지도
