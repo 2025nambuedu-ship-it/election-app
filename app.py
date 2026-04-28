@@ -141,7 +141,9 @@ with st.sidebar:
     
     st.divider()
     
-    st.markdown(f"## 🕐 {datetime.now().strftime('%H:%M:%S')}")
+    from datetime import timedelta
+    KST = datetime.now() + timedelta(hours=9)  # UTC → KST
+    st.markdown(f"## 🕐 {KST.strftime('%H:%M:%S')}")
     
     st.divider()
     
