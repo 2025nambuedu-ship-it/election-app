@@ -712,15 +712,24 @@ with tab3:
                         key="status_radio"
                     )
                     
-                    # 사진 업로드
-                    st.caption("📱 'Browse files' → 카메라 선택 가능")
+                    # ✅ 카메라 촬영 (바로 실행)
+                    st.caption("📱 카메라로 바로 촬영")
+                    camera_photo = st.camera_input("사진 촬영하기", key="camera_report")
+                    
+                    # 또는 파일 업로드
+                    st.caption("📁 또는 갤러리/파일에서 선택")
                     uploaded_photo = st.file_uploader(
-                        "사진 업로드",
+                        "파일 업로드",
                         type=["jpg", "jpeg", "png"],
                         key="file_report"
                     )
-                    if uploaded_photo:
-                        st.image(uploaded_photo, width=300)
+                    
+                    # 촬영한 사진 표시
+                    if camera_photo:
+                        uploaded_photo = camera_photo
+                        st.image(camera_photo, width=300, caption="촬영된 사진")
+                    elif uploaded_photo:
+                        st.image(uploaded_photo, width=300, caption="업로드된 사진")
                     
                     memo = st.text_area("📝 특이사항", placeholder="특이사항이 있으면 입력하세요", key="memo")
                     
