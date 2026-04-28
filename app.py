@@ -714,25 +714,14 @@ with tab3:
                     
                     # 사진 업로드
                     st.markdown("#### 📸 현장 사진 (선택)")
-                    photo_method = st.radio(
-                        "사진 등록 방법",
-                        ["📱 카메라 촬영", "📁 파일 업로드"],
-                        horizontal=True,
-                        key="photo_method"
+                    uploaded_photo = st.file_uploader(
+                        "📸 사진 업로드 (갤러리에서 선택 또는 카메라로 촬영)",
+                        type=["jpg", "jpeg", "png"],
+                        key="file_report",
+                        accept_multiple_files=False
                     )
-                    
-                    if photo_method == "📱 카메라 촬영":
-                        camera_photo = st.camera_input("현장 사진을 촬영하세요", key="camera_report")
-                        if camera_photo:
-                            st.image(camera_photo, width=300, caption="촬영된 사진")
-                    else:
-                        uploaded_photo = st.file_uploader(
-                            "사진 파일을 선택하세요",
-                            type=["jpg", "jpeg", "png"],
-                            key="file_report"
-                        )
-                        if uploaded_photo:
-                            st.image(uploaded_photo, width=300, caption="업로드된 사진")
+                    if uploaded_photo:
+                        st.image(uploaded_photo, width=300, caption="업로드된 사진")
                     
                     memo = st.text_area("📝 특이사항", placeholder="특이사항이 있으면 입력하세요", key="memo")
                     
