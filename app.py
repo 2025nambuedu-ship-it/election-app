@@ -201,13 +201,27 @@ def load_schedule():
 @st.cache_data(ttl=30)
 def load_team_data():
     try:
-        url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=1009853073"
+        # ✅ 팀현황 탭 gid=735109432
+        url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=735109432"
         df = pd.read_csv(url)
         if df is not None:
             df.columns = df.columns.str.strip()
+        # 컬럼 확인
+        if df is None or df.empty or '상태' not in df.columns:
+            return pd.DataFrame(
+                [["T", "", 37.8813, 127.7300, "준비"],
+                ["S", "", 37.6941, 127.8889, "준비"],
+                ["G", "", 37.3455, 129.1368, "준비"]], 
+                columns=['팀명', '시간', '위도', '경도', '상태']
+            )
         return df
     except:
-        return pd.DataFrame()
+        return pd.DataFrame(
+            [["T", "", 37.8813, 127.7300, "준비"],
+            ["S", "", 37.6941, 127.8889, "준비"],
+            ["G", "", 37.3455, 129.1368, "준비"]], 
+            columns=['팀명', '시간', '위도', '경도', '상태']
+        )
 
 
 # ========== 업데이트 함수 (에러 해결) ==========
