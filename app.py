@@ -713,8 +713,7 @@ with tab3:
                     )
                     
                     # 사진 업로드
-                    # 사진 업로드
-                    st.caption("📱 모바일: 'Browse files' 클릭 후 카메라 또는 갤러리 선택")
+                    st.caption("📱 'Browse files' → 카메라 선택 가능")
                     uploaded_photo = st.file_uploader(
                         "사진 업로드",
                         type=["jpg", "jpeg", "png"],
