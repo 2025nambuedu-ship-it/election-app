@@ -713,15 +713,35 @@ with tab3:
                     )
                     
                     # 사진 업로드
-                    st.markdown("#### 📸 현장 사진 (선택)")
+                    st.markdown("""
+                    <style>
+                        .camera-btn {
+                            background-color: #00ff88;
+                            color: #000000;
+                            font-weight: bold;
+                            font-size: 18px;
+                            padding: 15px;
+                            border-radius: 10px;
+                            border: none;
+                            width: 100%;
+                            cursor: pointer;
+                            text-align: center;
+                        }
+                        .camera-btn:hover {
+                            background-color: #00cc66;
+                        }
+                    </style>
+                    """, unsafe_allow_html=True)
+                    
                     uploaded_photo = st.file_uploader(
-                        "📸 사진 업로드 (갤러리에서 선택 또는 카메라로 촬영)",
+                        "📸 사진 촬영 또는 업로드",
                         type=["jpg", "jpeg", "png"],
                         key="file_report",
-                        accept_multiple_files=False
+                        accept_multiple_files=False,
+                        help="모바일: 자동으로 카메라가 실행됩니다"
                     )
                     if uploaded_photo:
-                        st.image(uploaded_photo, width=300, caption="업로드된 사진")
+                        st.image(uploaded_photo, width=300, caption="촬영된 사진")
                     
                     memo = st.text_area("📝 특이사항", placeholder="특이사항이 있으면 입력하세요", key="memo")
                     
