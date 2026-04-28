@@ -255,7 +255,6 @@ if team_df.empty:
 # ========== 탭 ==========
 tab1, tab2, tab3 = st.tabs(["🗺️ 실시간 지도", "📋 현황판", "📱 보고하기"])
 
-# ✅ 현재 시간
 # ✅ 한국 시간
 from datetime import timedelta
 kst_now = datetime.now() + timedelta(hours=9)
@@ -469,28 +468,46 @@ with tab2:
     
     result_df = pd.DataFrame(display_data)
     
-    # HTML 테이블
-    html_table = """
-    <table style="width:100%; border-collapse:collapse; background-color:#1a1f2b; border:2px solid #00ff88; border-radius:8px; overflow:hidden;">
-        <thead>
-            <tr style="background-color:#00ff88;">
-    """
+    # ✅ 모바일 대응 카드 뷰
+    import streamlit.components.v1 as components
     
-    headers = list(result_df.columns)
-    for h in headers:
-        html_table += f'<th style="padding:12px 10px; text-align:center; color:#000000; font-weight:bold;">{h}</th>'
-    
-    html_table += '</tr></thead><tbody>'
+    cards_html = '<div style="display:flex; flex-wrap:wrap; gap:10px;">'
     
     for _, row in result_df.iterrows():
-        html_table += '<tr style="background-color:#1a1f2b;">'
-        for val in row:
-            html_table += f'<td style="padding:10px; text-align:center; color:#ffffff; border-bottom:1px solid #333333; font-weight:500;">{val}</td>'
-        html_table += '</tr>'
+        dan = row['유세단']
+        status = row['상태']
+        plan = row['현재 장소(계획)']
+        next_plan = row['다음 일정']
+        report = row['최종 보고']
+        
+        # 유세단별 색상
+        if "T" in dan:
+            color = "#ff4444"
+        elif "S" in dan:
+            color = "#4488ff"
+        else:
+            color = "#ff8800"
+        
+        cards_html += f"""
+        <div style="
+            background-color:#1a1f2b;
+            border-left:4px solid {color};
+            border-radius:8px;
+            padding:12px;
+            margin-bottom:8px;
+            width:100%;
+            min-width:280px;
+        ">
+            <div style="font-size:18px;font-weight:bold;color:{color};margin-bottom:6px;">{row[' ']} {dan}</div>
+            <div style="color:#cccccc;font-size:14px;margin-bottom:4px;">상태: <span style="color:#ffffff;font-weight:bold;">{status}</span></div>
+            <div style="color:#cccccc;font-size:14px;margin-bottom:4px;">📍 {plan}</div>
+            <div style="color:#cccccc;font-size:14px;margin-bottom:4px;">⏭️ {next_plan}</div>
+            <div style="color:#888888;font-size:12px;">🕐 최종보고: {report}</div>
+        </div>
+        """
     
-    html_table += '</tbody></table>'
-    
-    st.markdown(html_table, unsafe_allow_html=True)
+    cards_html += '</div>'
+    components.html(cards_html, height=len(result_df)*130+50, scrolling=True)
     
     if filtered_df.empty:
         st.warning("선택한 조건에 해당하는 유세단이 없습니다.")
