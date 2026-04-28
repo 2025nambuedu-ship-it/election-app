@@ -144,7 +144,7 @@ with st.sidebar:
     from datetime import timedelta
     KST = datetime.now() + timedelta(hours=9)  # UTC → KST
     st.markdown(f"## 🕐 {KST.strftime('%H:%M:%S')}")
-    
+        
     st.divider()
     
     st.markdown("### 📍 유세단 표시")
@@ -170,6 +170,7 @@ with st.sidebar:
     st.caption("© 2025 강원 유세 관제 시스템")
 
 # ========== 구글 시트 연결 ==========
+SPREADSHEET_ID = "1fgL49wMgzZb6ybwcYvb4xMpPlabirAX-MaSjRwdBrjY"
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1fgL49wMgzZb6ybwcYvb4xMpPlabirAX-MaSjRwdBrjY"
 
 def read_gsheet_csv(sheet_name):
@@ -182,9 +183,12 @@ def read_gsheet_csv(sheet_name):
         return pd.DataFrame()
     
 # ========== 캐시 데이터 로드 ==========
+@st.cache_data(ttl=60)
 def load_schedule():
     try:
-        df = read_gsheet_csv("일정")
+        # ✅ gid로 직접 지정 (일정 탭)
+        url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=1009853073"
+        df = pd.read_csv(url)
         if df is not None and not df.empty:
             df['시작시간'] = df['시작시간'].astype(str).str.zfill(5)
             df['종료시간'] = df['종료시간'].astype(str).str.zfill(5)
@@ -197,7 +201,8 @@ def load_schedule():
 @st.cache_data(ttl=30)
 def load_team_data():
     try:
-        df = read_gsheet_csv("팀현황")
+        url = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/gviz/tq?tqx=out:csv&gid=1009853073"
+        df = pd.read_csv(url)
         if df is not None:
             df.columns = df.columns.str.strip()
         return df
